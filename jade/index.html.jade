@@ -1,0 +1,23 @@
+extends _layout
+
+block title
+	title Nate Walton
+
+block content
+	- var extension = localEnv ? '.html' : '';
+
+	.feature
+		for quote in quotes
+			.quote!= quote.text
+			.byline!= quote.byline
+	.content
+		for block in contents
+			.wrapper
+				a.heading(href=block.url + extension)!= block.heading
+				each image, i in block.images
+					a(class="preview toLoad image-" + i, href=block.url + extension + image.hash)
+						span.projectDesc
+							span.projectTitle #{image.title}
+						img.lazy.front(data-src=image.url, alt='')
+				a.viewall.next(href=block.url + extension)
+					span.link.visuallyhidden View all
