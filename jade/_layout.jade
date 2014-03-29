@@ -1,16 +1,16 @@
 html.no-js(lang="en")
 	head
 		- var localEnv = env === 'local'
-		- var cssVersion = 3.11
-		- var jsVersion = 2.2
+		- var cssVersion = 1
+		- var jsVersion = 1
 
-		- var assetBase = assets;
+		- var assetBase = '/';
 		- var extension = localEnv ? '.html' : '';
 
 		meta(charset='UTF-8')
 		meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
 		block title
-			title Nate Walton: #{page.title}
+			title Nate Walton: About
 		block meta
 			meta(name='description', content='Nathan Walton\'s graphic design web site')
 			meta(name='keywords', content='design, responsive, web, web design, typography, portfolio, education, design education')
@@ -30,7 +30,7 @@ html.no-js(lang="en")
 			window.assets      = "#{assetBase}";
 		script(src= assetBase + 'js/init.min.js?v=' + jsVersion)
 
-	body(class=page.menu)
+	body(class="about")
 		header.main
 			h1 
 				a(href="/") Nate Walton

@@ -107,8 +107,6 @@ module.exports = (grunt) ->
 			options:
 				pretty: true
 			index:
-				options:
-					data: (dest, src) -> return require('./data/index.json')
 				files:
 					'index.html' : 'jade/index.html.jade'
 
