@@ -1,6 +1,6 @@
 html.no-js(lang="en")
 	head
-		- var localEnv = env === 'local'
+		- var localEnv = true
 		- var cssVersion = 1
 		- var jsVersion = 1
 
@@ -10,11 +10,11 @@ html.no-js(lang="en")
 		meta(charset='UTF-8')
 		meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
 		block title
-			title Nate Walton: About
+			title Nate Walton
 		block meta
-			meta(name='description', content='Nathan Walton\'s graphic design web site')
-			meta(name='keywords', content='design, responsive, web, web design, typography, portfolio, education, design education')
-		meta(name='viewport', content='width=device-width, , initial-scale=1')
+			meta(name='description', content="Desc here")
+			meta(name='keywords', content='')
+		meta(name='viewport', content='width=device-width, , initial-scale=1.0')
 
 		// Place favicon.ico and apple-touch-icon.png in the root directory
 		link(rel='shortcut icon', href=assetBase + 'favicon.ico?v=3')
@@ -33,12 +33,8 @@ html.no-js(lang="en")
 	body(class="about")
 		header.main
 			h1 
-				a(href="/") Nate Walton
-			nav
-				a.home(href="/") Home
-				a.work(href="/portfolio" + extension) Work
-				a.teaching(href="/students" + extension) Teaching
-				// a.contact(href="/contact" + extension) Find me
+				a(href="/") Home Page
+				a(href="/") Link 1
 
 		block content
 

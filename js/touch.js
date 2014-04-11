@@ -35,12 +35,12 @@
 			
 			// Swipe left: close the side nav if it's open
 			swipeLeft:function(event, direction, distance, duration, fingerCount) {
-				changeSlide();
+				
 			},
 
 			// Swipe right: open the side nav if it's closed
 			swipeRight:function(event, direction, distance, duration, fingerCount) {
-				changeSlide('prev');
+				
 			},
 
 			// Will trigger as soon as swipewidth is reached rather than waiting until the end of the swipe

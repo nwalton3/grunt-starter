@@ -1,4 +1,4 @@
-portfolio presentation
+Grunt Starter
 =========
 
-Presentation to DVA Faculty
+Starter project for grunt workflow

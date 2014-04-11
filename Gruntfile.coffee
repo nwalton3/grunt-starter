@@ -5,6 +5,9 @@ path = require('path')
 folderMount = (connect, point) ->
 	return connect.static(path.resolve(point))
 
+checkForModifiedImports = (grunt, path, time, include) ->
+	# contents = grunt.file.read path
+	include true
 
 module.exports = (grunt) ->
 
@@ -19,20 +22,14 @@ module.exports = (grunt) ->
 			script:
 				files:
 					'js/script.min.js' : [
-						'js/libs/jquery-2.0.3.min.js',
-						# 'js/libs/snap-svg.min.js',
+						'js/libs/jquery.min.js',
 						'js/plugins/typogr.js',
-						'js/plugins/hisrc.js',
-						'js/plugins/imageloader.js',
 						'js/script.js']
 			touch:
 				files:
 					'js/script-touch.min.js' : [
-						'js/libs/jquery-2.0.3.min.js',
-						# 'js/libs/snap-svg.min.js',
+						'js/libs/jquery.min.js',
 						'js/plugins/typogr.js',
-						'js/plugins/hisrc.js',
-						'js/plugins/imageloader.js',
 						'js/plugins/touchswipe.js',
 						'js/touch.js',
 						'js/script.js']
@@ -62,97 +59,79 @@ module.exports = (grunt) ->
 			options:
 				compass: 'config.rb'
 				style: 'compressed'
-				debugInfo: true
-				trace:     true
-				sourcemap: true
-			local:
-				files:
-					"css/style.css" : "sass/style.sass"
-			prod:
-				options:
-					sourcemap: false
-				files:
-					"css/style.css" : "sass/style.sass"
+				debugInfo: '<%= local %>'
+				trace:     '<%= local %>'
+				sourcemap: '<%= local %>'
+			files:
+				expand: true
+				cwd: 'sass/'
+				src: ['*.sass', '*.scss', '!_*.sass', '!_*.scss']
+				dest: 'css/'
+				ext: '.css'
 
 
 		autoprefixer:
-			local:
-				options:
-					map: true
+			options:
+				map: '<%= local %>'
+				browsers: ['last 4 versions', '> 1%']
+			files: 
 				src: 'css/*.css'
-			prod:
-				options:
-					map: false
-				src: 'css/*.css'
-
-		# "merge-json":
-		# 	local:
-		# 		files:
-		# 			'data/index.json' :     ['data/env/local.json', 'data/page/index.json']
-		# 			'data/portfolio.json' : ['data/env/local.json', 'data/page/portfolio.json']
-		# 			'data/students.json' :  ['data/env/local.json', 'data/page/students.json']
-		# 	stage:
-		# 		files:
-		# 			'data/index.json' :     ['data/env/stage.json', 'data/page/index.json']
-		# 			'data/portfolio.json' : ['data/env/stage.json', 'data/page/portfolio.json']
-		# 			'data/students.json' :  ['data/env/stage.json', 'data/page/students.json']
-		# 	prod:
-		# 		files:
-		# 			'data/index.json' :     ['data/env/prod.json', 'data/page/index.json']
-		# 			'data/portfolio.json' : ['data/env/prod.json', 'data/page/portfolio.json']
-		# 			'data/students.json' :  ['data/env/prod.json', 'data/page/students.json']
 
 
 		jade:
 			options:
 				pretty: true
-			index:
-				files:
-					'index.html' : 'jade/index.html.jade'
+			files:
+				expand: true
+				cwd: 'jade/'
+				src: ['*.html.jade']
+				dest: ''
+				ext: '.html'
 
 		yaml:
 			options:
 				space: 2
-			pages: 
-				files:
-					'data/index.json': ['data/index.yml']
+			files:
+				expand: true
+				cwd: ''
+				src: ['data/**/*.yaml']
+				dest: 'data/'
+				ext: '.json'
+
+		newer:
+			options:
+				override: (detail, include) ->
+					if detail.task is 'sass' or detail.task is 'jade'
+						include true
+						# checkForModifiedImports grunt, detail.path, detail.time, include
+					else
+						include false
 
 		watch:
+			options:
+				spawn: false
 			sass:
-				options:
-					livereload: true
 				files: ['sass/**/*.sass', 'sass/**/*.scss']
-				tasks: ['sass:local', 'autoprefixer:local']
-
+				tasks: ['newer:sass']
+			css:
+				options:
+					livereload: true
+				files: ['css/**/*']
+				tasks: ['newer:autoprefixer']
 			jade:
-				files: ['jade/**/*.jade', 'data/**/*.json']
-				tasks: ['jade']
-
-			image:
-				files: ['img/*']
-				options:
-					livereload: true
-			html:
-				files: ['*.html']
-				options:
-					livereload: true
+				files: ['jade/**/*.jade']
+				tasks: ['newer:jade']
 			js:
 				files: ['js/script.js', 'js/touch.js']
-				tasks: ['jshint', 'uglify:script', 'uglify:touch']
-			initjs:
-				files: ['js/init.js']
-				tasks: ['jshint', 'uglify:init']
-			jsmin:
-				files: ['js/script.min.js', 'js/init.min.js']
-				options:
-					livereload: true
-			css:
-				files: ['css/**/*']
-				options:
-					livereload: true
+				tasks: ['newer:jshint', 'newer:uglify']
 			yaml:
 				files: ['data/**/*.yml']
-				tasks: ['yaml']
+				tasks: ['newer:yaml']
+			livereload:
+				files: ['img/*', '*.html', 'js/*.min.js']
+				options:
+					livereload: true
+
 
 		connect:
 			server:
@@ -163,12 +142,14 @@ module.exports = (grunt) ->
 
 	require('load-grunt-tasks')(grunt);
 
-
 	# Environments
-	grunt.registerTask('local', ['sass:local', 'autoprefixer:local', 'yaml', 'jade'])
-	grunt.registerTask('stage', ['sass:prod',  'autoprefixer:prod',  'yaml', 'jade'])
-	grunt.registerTask('prod',  ['sass:prod',  'autoprefixer:prod',  'yaml', 'jade'])
+	
+	local = grunt.option('local') || true
+	grunt.registerTask( 'setLocal', 'Local is true', () -> local = true )
+	grunt.registerTask( 'setLocal', 'Local is true', () -> local = false )
+	grunt.registerTask('local',  ['setLocal',  'compile'])
+	grunt.registerTask('prod',  ['setProd',  'compile'])
 
 	# Default task(s).
-	grunt.registerTask('compile', ['sass:local', 'autoprefixer:local', 'jade'])
+	grunt.registerTask('compile', ['sass', 'autoprefixer', 'jade', 'jshint', 'uglify', 'yaml'])
 	grunt.registerTask('default', ['compile', 'connect', 'watch'])

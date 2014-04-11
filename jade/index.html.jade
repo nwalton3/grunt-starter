@@ -1,9 +1,12 @@
 extends _layout
 
 block title
-	title Nate Walton
+	title Title here
+block meta
+	meta(name='description', content="Home")
+	meta(name='keywords', content='')
 
 block content
-	- var extension = localEnv ? '.html' : '';
+	h1 Page title
 
-	.wrapper content here
+
